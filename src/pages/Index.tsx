@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
+
 import { Sparkles, BookOpen, Image, Users, ArrowRight, Zap, Radio, Eye } from "lucide-react";
 import heroImage from "@/assets/hero-space-weather.jpg";
 import sunCharacter from "@/assets/sun-character.png";
+import Chatbot from "@/components/Chatbot";
 
 const Index = () => {
   const features = [
@@ -204,6 +206,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      {/* Floating Chatbot Icon and Dialog */}
+      <Chatbot />
     </div>
   );
 };
