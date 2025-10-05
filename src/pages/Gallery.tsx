@@ -1,15 +1,17 @@
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import aurora from "@/assets/aurora.jpg";
-import heroImage from "@/assets/hero-space-weather.jpg";
+import heroImage from "@/assets/magentic-field.jpg";
+import { url } from "inspector";
 
 const Gallery = () => {
   const images = [
     {
       src: heroImage,
       title: "Solar Flare and Earth",
-      description: "A dramatic view of solar activity affecting Earth's magnetosphere",
-      credit: "Generated educational visualization",
+      description: "depiction of the Sun magnetic fields is overlaid on an image of the Sun captured in extreme ultraviolet light by NASA Solar Dynamics Observatory on",
+      credit: "NASA/SDO and the AIA, EVE, and HMI scilence teams",
+      url: "https://science.nasa.gov/sun/solar-storms-and-flares/",
     },
     {
       src: aurora,
@@ -23,7 +25,7 @@ const Gallery = () => {
     {
       title: "NASA Space Weather",
       description: "Real-time data and images from NASA",
-      url: "https://www.nasa.gov/mission_pages/sunearth/spaceweather/",
+      url: "https://science.nasa.gov/heliophysics/focus-areas/space-weather/",
     },
     {
       title: "NOAA Space Weather Prediction Center",
