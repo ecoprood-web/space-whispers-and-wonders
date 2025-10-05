@@ -105,7 +105,7 @@ const Index = () => {
                   Space weather describes the constant interaction between the Sun and Earth. 
                   When the Sun "sneezes" with solar flares and eruptions, it sends clouds of 
                   charged particles hurtling through space. These events can affect satellites, 
-                  communications, navigation, power systems—and create stunning auroras!
+                  communications, navigation, power systems—and create stunning auroras!. 
                 </p>
                 
                 <div className="grid md:grid-cols-4 gap-4">
