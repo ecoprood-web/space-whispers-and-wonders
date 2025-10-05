@@ -57,13 +57,6 @@ const Index = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-            <div className="flex justify-center">
-              <img 
-                src={sunCharacter} 
-                alt="Sol the Sun" 
-                className="w-32 h-32 object-contain animate-float"
-              />
-            </div>
             
             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
               <span className="bg-gradient-aurora bg-clip-text text-transparent">
