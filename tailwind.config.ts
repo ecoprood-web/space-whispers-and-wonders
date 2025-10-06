@@ -47,10 +47,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        aurora: {
-          green: "hsl(var(--aurora-green))",
-          purple: "hsl(var(--aurora-purple))",
-        },
+    aurora: {
+      green: "hsl(var(--aurora-green))",
+      purple: "hsl(var(--aurora-purple))",
+      blue: "hsl(var(--cosmic-blue))",
+    },
         solar: "hsl(var(--solar-orange))",
         cosmic: "hsl(var(--cosmic-blue))",
       },
@@ -100,6 +101,18 @@ export default {
           from: { opacity: "0", transform: "translateY(40px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "orbit": {
+          "0%": { transform: "rotate(0deg) translateX(60px) rotate(0deg)" },
+          "100%": { transform: "rotate(360deg) translateX(60px) rotate(-360deg)" },
+        },
+        "aurora-wave": {
+          "0%, 100%": { transform: "translateY(0) scaleX(1)" },
+          "50%": { transform: "translateY(-10px) scaleX(1.1)" },
+        },
+        "scale-in": {
+          from: { transform: "scale(0.9)", opacity: "0" },
+          to: { transform: "scale(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -109,6 +122,9 @@ export default {
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "fade-in": "fade-in 0.6s ease-out",
         "slide-up": "slide-up 0.6s ease-out",
+        "orbit": "orbit 5s linear infinite",
+        "aurora-wave": "aurora-wave 4s ease-in-out infinite",
+        "scale-in": "scale-in 0.4s ease-out",
       },
     },
   },
