@@ -164,26 +164,6 @@ const Teachers = () => {
               </ul>
             </CardContent>
           </Card>
-
-          <Card className="bg-gradient-aurora/10 border-primary/20">
-            <CardHeader>
-              <CardTitle>Additional Resources</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="font-semibold text-foreground">Official Educational Materials:</p>
-                <ul className="space-y-1 text-sm text-muted-foreground">
-                  <li>• NASA Space Weather Education Resources</li>
-                  <li>• NOAA Space Weather Curriculum Guides</li>
-                  <li>• Real-time space weather data and forecasts</li>
-                </ul>
-              </div>
-              <Button className="w-full sm:w-auto" variant="default">
-                <Download className="h-4 w-4 mr-2" />
-                Download Lesson Plan (Coming Soon)
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

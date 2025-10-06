@@ -14,7 +14,7 @@ const Index = () => {
       icon: Sparkles,
       title: "Interactive Stories",
       description: "Follow Sol the Sun and friends through engaging narratives about space weather",
-      link: "/story",
+      link: "http://localhost:8080",
     },
     {
       icon: Eye,
@@ -75,7 +75,7 @@ const Index = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="group shadow-glow">
-                <Link to="/story">
+                <Link to="/teachers">
                   Start the Adventure
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
