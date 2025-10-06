@@ -7,7 +7,7 @@ const Navigation = () => {
   
   const navItems = [
     { path: "/", label: "Home", icon: Home },
-    { path: "https://spaceweather-adventure-demo.com", label: "Interactive Story", icon: Sparkles, external: true },
+    { path: "http://localhost:8080", label: "Interactive Story", icon: Sparkles, external: true },
     { path: "/gallery", label: "Gallery", icon: Image },
     { path: "/teachers", label: "For Teachers", icon: BookOpen },
     { path: "/feedback", label: "Share Ideas", icon: Users },
