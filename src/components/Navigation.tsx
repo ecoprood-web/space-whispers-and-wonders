@@ -7,7 +7,7 @@ const Navigation = () => {
   
   const navItems = [
     { path: "/", label: "Home", icon: Home },
-    { path: "/story", label: "Interactive Story", icon: Sparkles },
+    { path: "https://spaceweather-adventure-demo.com", label: "Interactive Story", icon: Sparkles, external: true },
     { path: "/gallery", label: "Gallery", icon: Image },
     { path: "/teachers", label: "For Teachers", icon: BookOpen },
     { path: "/feedback", label: "Share Ideas", icon: Users },
@@ -28,7 +28,22 @@ const Navigation = () => {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
-              
+              if (item.external) {
+                return (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="gap-2"
+                  >
+                    <a href={item.path} target="_blank" rel="noopener noreferrer">
+                      <Icon className="h-4 w-4" />
+                      <span className="hidden sm:inline">{item.label}</span>
+                    </a>
+                  </Button>
+                );
+              }
               return (
                 <Button
                   key={item.path}
