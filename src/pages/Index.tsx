@@ -14,7 +14,7 @@ const Index = () => {
       icon: Sparkles,
       title: "Interactive Stories",
       description: "Follow Sol the Sun and friends through engaging narratives about space weather",
-      link: "http://localhost:8080",
+      link: "https://lovable.dev/projects/5e405ffc-1dac-417e-a921-8018895f6352",
     },
     {
       icon: Eye,
@@ -178,7 +178,7 @@ const Index = () => {
               </CardHeader>
               <CardContent className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild className="shadow-glow">
-                  <Link to="http://localhost:8080/" target="_blank" rel="noopener noreferrer">
+                  <Link to="https://lovable.dev/projects/5e405ffc-1dac-417e-a921-8018895f6352" target="_blank" rel="noopener noreferrer">
                     Begin Interactive Story
                   </Link>
                 </Button>

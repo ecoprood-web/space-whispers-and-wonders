@@ -7,7 +7,7 @@ const Navigation = () => {
   
   const navItems = [
     { path: "/", label: "Home", icon: Home },
-    { path: "http://localhost:8080", label: "Interactive Story", icon: Sparkles, external: true },
+    { path: "https://lovable.dev/projects/5e405ffc-1dac-417e-a921-8018895f6352", label: "Interactive Story", icon: Sparkles, external: true },
     { path: "/gallery", label: "Gallery", icon: Image },
     { path: "/teachers", label: "For Teachers", icon: BookOpen },
     { path: "/feedback", label: "Share Ideas", icon: Users },
