@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import Navigation from "@/components/Navigation";
 import sunCharacter from "@/assets/sun-character.png";
 import pilotCharacter from "@/assets/pilot-character.png";
-import { Volume2, ArrowRight, Zap, Radio, Lightbulb, Satellite, Shield, Activity } from "lucide-react";
+import { Volume2, ArrowRight, Zap, Radio, Lightbulb, Satellite, Shield, Activity, Power, Wifi, Navigation as NavigationIcon, AlertTriangle, Sparkles, Moon, Sun as SunIcon } from "lucide-react";
 
 type Scene = "intro" | "choose-sneeze" | "sneeze" | "cme-journey" | "magnetic-field" | "effects-menu" | "effect-satellites" | "effect-power" | "effect-radio" | "effect-astronauts" | "pilot" | "aurora" | "aurora-science" | "radiation-belts" | "solar-cycle" | "end";
 
@@ -18,15 +19,24 @@ type SceneData = {
   particles?: boolean;
   interactive?: boolean;
   menu?: boolean;
+  simulator?: "satellites" | "power" | "radio" | "aurora" | "magnetic";
   choices: Array<{ text: string; next: Scene; icon?: any }>;
 };
 
 const Story = () => {
   const [currentScene, setCurrentScene] = useState<Scene>("intro");
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
   const [cmeStrength, setCmeStrength] = useState(50);
   const [effectsExplored, setEffectsExplored] = useState<string[]>([]);
-  const [sunMood, setSunMood] = useState<"happy" | "sneeze" | "proud" | "silly">("happy");
+  const [sunMood, setSunMood] = useState<"happy" | "sneeze" | "proud" | "silly" | "excited" | "worried">("happy");
+  
+  // Interactive simulator states
+  const [satelliteHealth, setSatelliteHealth] = useState(100);
+  const [powerGridLoad, setPowerGridLoad] = useState(50);
+  const [radioSignal, setRadioSignal] = useState(100);
+  const [auroraIntensity, setAuroraIntensity] = useState(30);
+  const [magneticFieldStrength, setMagneticFieldStrength] = useState(100);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -37,14 +47,44 @@ const Story = () => {
     }
   };
 
-  const triggerParticles = () => {
-    const newParticles = Array.from({ length: 20 }, (_, i) => ({
+  const triggerParticles = (count = 30) => {
+    const newParticles = Array.from({ length: count }, (_, i) => ({
       id: Date.now() + i,
       x: Math.random() * 100,
       y: Math.random() * 100,
+      delay: Math.random() * 0.5,
     }));
     setParticles(newParticles);
-    setTimeout(() => setParticles([]), 2000);
+    setTimeout(() => setParticles([]), 3000);
+  };
+
+  const simulateSolarStorm = () => {
+    setIsSimulating(true);
+    triggerParticles(50);
+    
+    // Simulate effects based on CME strength
+    const stormInterval = setInterval(() => {
+      const impact = cmeStrength / 100;
+      
+      setSatelliteHealth(prev => Math.max(0, prev - (impact * 5)));
+      setPowerGridLoad(prev => Math.min(100, prev + (impact * 10)));
+      setRadioSignal(prev => Math.max(0, prev - (impact * 8)));
+      setAuroraIntensity(prev => Math.min(100, prev + (impact * 15)));
+      setMagneticFieldStrength(prev => Math.max(50, prev - (impact * 3)));
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(stormInterval);
+      setIsSimulating(false);
+    }, 3000);
+  };
+
+  const resetSimulation = () => {
+    setSatelliteHealth(100);
+    setPowerGridLoad(50);
+    setRadioSignal(100);
+    setAuroraIntensity(30);
+    setMagneticFieldStrength(100);
   };
 
   const exploreEffect = (effect: string) => {
@@ -56,13 +96,22 @@ const Story = () => {
   useEffect(() => {
     if (currentScene === "sneeze") {
       setSunMood("sneeze");
-      triggerParticles();
-    } else if (currentScene === "aurora") {
+      triggerParticles(40);
+    } else if (currentScene === "aurora" || currentScene === "aurora-science") {
       setSunMood("proud");
     } else if (currentScene === "intro" || currentScene === "choose-sneeze") {
       setSunMood("silly");
+    } else if (currentScene === "cme-journey") {
+      setSunMood("excited");
+    } else if (currentScene === "effect-astronauts") {
+      setSunMood("worried");
     } else {
       setSunMood("happy");
+    }
+    
+    // Reset simulation when entering effect scenes
+    if (currentScene.startsWith("effect-")) {
+      resetSimulation();
     }
   }, [currentScene]);
 
@@ -112,8 +161,9 @@ const Story = () => {
     "magnetic-field": {
       title: "Earth's Invisible Shield! 🛡️",
       character: sunCharacter,
-      text: "Plot twist! Earth has a SECRET WEAPON—its magnetic field! It's like an invisible force field (generated by Earth's liquid iron core) that deflects most of my charged particles. When my particles hit this field, they get redirected toward the poles like water flowing around a rock. That's why auroras happen near the Arctic and Antarctic! Without this shield, life on Earth would be... well, crispy. 🔥",
+      text: "Plot twist! Earth has a SECRET WEAPON—its magnetic field! It's like an invisible force field (generated by Earth's liquid iron core spinning around) that deflects most of my charged particles. When my particles hit this field, they get redirected toward the poles like water flowing around a rock. That's why auroras happen near the Arctic and Antarctic! The field extends 370,000 miles into space—that's further than the Moon! Without this shield, life on Earth would be... well, crispy. 🔥 Mars lost its magnetic field billions of years ago, and its atmosphere got stripped away by solar wind. Lucky Earth! Try the simulator to see how the magnetic field deflects my particles!",
       narration: "Plot twist! Earth has a secret weapon—its magnetic field! It's like an invisible force field generated by Earth's liquid iron core that deflects most of my charged particles. When my particles hit this field, they get redirected toward the poles.",
+      simulator: "magnetic",
       choices: [
         { text: "Show me ALL the effects! 🌎", next: "effects-menu" as Scene },
         { text: "Tell me about the auroras! 🌌", next: "aurora" as Scene },
@@ -137,8 +187,9 @@ const Story = () => {
     "effect-satellites": {
       title: "Satellites: The Sitting Ducks 🛰️",
       character: sunCharacter,
-      text: "Okay, so satellites are basically sitting in space with NO protection (poor things). When my charged particles hit them, it's like a cosmic static shock! ⚡ Their electronics can glitch, solar panels get damaged, and sometimes they even tumble out of control. In 2022, SpaceX lost 40 Starlink satellites to one of my stronger sneezes—they just couldn't handle the increased atmospheric drag. Oops! 😅 GPS satellites can give wrong positions (up to 10 meters off), which is BAD if you're landing a plane!",
+      text: "Okay, so satellites are basically sitting in space with NO protection (poor things). When my charged particles hit them, it's like a cosmic static shock! ⚡ Their electronics can glitch, solar panels get damaged, and sometimes they even tumble out of control. In 2022, SpaceX lost 40 Starlink satellites to one of my stronger sneezes—they just couldn't handle the increased atmospheric drag. Oops! 😅 GPS satellites can give wrong positions (up to 10 meters off), which is BAD if you're landing a plane! Try the simulator below to see what happens!",
       narration: "Satellites are basically sitting in space with no protection. When my charged particles hit them, their electronics can glitch, solar panels get damaged, and sometimes they even tumble out of control. GPS satellites can give wrong positions up to 10 meters off.",
+      simulator: "satellites",
       choices: [
         { text: "Back to effects menu", next: "effects-menu" as Scene },
         { text: "What about power grids?", next: "effect-power" as Scene },
@@ -147,8 +198,9 @@ const Story = () => {
     "effect-power": {
       title: "Lights Out! The Power Grid Problem ⚡🔌",
       character: sunCharacter,
-      text: "Here's where it gets REALLY dramatic! When my particles hit Earth's magnetic field, they create electric currents in the ground—like, literally electricity flowing through the dirt! These currents can overload transformers in power grids. In 1989, my sneeze knocked out power to 6 MILLION people in Quebec for 9 hours! 🔦 Modern transformers can handle small events, but a really big sneeze could cause blackouts lasting weeks or months. Yikes!",
+      text: "Here's where it gets REALLY dramatic! When my particles hit Earth's magnetic field, they create electric currents in the ground—like, literally electricity flowing through the dirt! These currents can overload transformers in power grids. In 1989, my sneeze knocked out power to 6 MILLION people in Quebec for 9 hours! 🔦 Modern transformers can handle small events, but a really big sneeze could cause blackouts lasting weeks or months. The Carrington Event of 1859 was so powerful, telegraph wires caught fire! Imagine that happening to today's power grid... chaos! Adjust the solar storm intensity and watch what happens to the power grid!",
       narration: "When my particles hit Earth's magnetic field, they create electric currents in the ground that can overload transformers in power grids. In 1989, my sneeze knocked out power to 6 million people in Quebec for 9 hours!",
+      simulator: "power",
       choices: [
         { text: "Back to effects menu", next: "effects-menu" as Scene },
         { text: "What about radio?", next: "effect-radio" as Scene },
@@ -157,8 +209,9 @@ const Story = () => {
     "effect-radio": {
       title: "Radio Silence 📻🔇",
       character: sunCharacter,
-      text: "You know how radio waves bounce off the ionosphere to travel long distances? Well, my particles MESS with that layer! Suddenly, radio signals get absorbed instead of reflected. Ham radio operators call this a 'radio blackout.' Military communications can fail, emergency services struggle, and even your car's GPS voice might ghost you mid-turn! The blackout can last from minutes to hours depending on how strong my sneeze was. 📡❌",
+      text: "You know how radio waves bounce off the ionosphere to travel long distances? Well, my particles MESS with that layer! Suddenly, radio signals get absorbed instead of reflected. Ham radio operators call this a 'radio blackout.' Military communications can fail, emergency services struggle, and even your car's GPS voice might ghost you mid-turn! The blackout can last from minutes to hours depending on how strong my sneeze was. Airlines can't communicate with control towers, ships lose navigation, and emergency responders can't coordinate. It's like the entire planet goes on 'Do Not Disturb' mode! 📡❌ Watch the signal strength drop as solar particles hit!",
       narration: "My particles mess with the ionosphere! Radio signals get absorbed instead of reflected. Military communications can fail, emergency services struggle, and GPS might stop working.",
+      simulator: "radio",
       choices: [
         { text: "Back to effects menu", next: "effects-menu" as Scene },
         { text: "What about astronauts?!", next: "effect-astronauts" as Scene },
@@ -187,8 +240,9 @@ const Story = () => {
     aurora: {
       title: "Aurora Magic: Nature's Light Show! 🌈✨",
       character: sunCharacter,
-      text: "Okay, NOW for my favorite part—THE AURORAS! 🎨 When my charged particles collide with oxygen and nitrogen in Earth's upper atmosphere (60-200 miles up), they make those atoms GLOW! It's like a cosmic neon sign! Oxygen creates the green and red colors, nitrogen makes blue and purple. The lights dance and shimmer because the magnetic field is constantly shifting. It's literally me painting the sky with physics! Sometimes they're so bright you can read a book by their light!",
+      text: "Okay, NOW for my favorite part—THE AURORAS! 🎨 When my charged particles collide with oxygen and nitrogen in Earth's upper atmosphere (60-200 miles up), they make those atoms GLOW! It's like a cosmic neon sign! Oxygen creates the green and red colors, nitrogen makes blue and purple. The lights dance and shimmer because the magnetic field is constantly shifting. It's literally me painting the sky with physics! Sometimes they're so bright you can read a book by their light! During the strongest storms, auroras can be seen as far south as Mexico or the Mediterranean! Indigenous peoples called them 'dancing spirits,' Vikings thought they were reflections from Valkyrie armor, and some thought they heard them crackle and hiss! Use the simulator to control the aurora intensity!",
       narration: "When my charged particles collide with oxygen and nitrogen in Earth's upper atmosphere, they make those atoms glow! Oxygen creates the green and red colors, nitrogen makes blue and purple.",
+      simulator: "aurora",
       choices: [
         { text: "Tell me MORE about the science!", next: "aurora-science" as Scene },
         { text: "Back to effects menu", next: "effects-menu" as Scene },
@@ -247,11 +301,12 @@ const Story = () => {
       {particles.map((particle) => (
         <div
           key={particle.id}
-          className="absolute w-2 h-2 bg-solar rounded-full animate-fade-in"
+          className="absolute w-3 h-3 bg-solar rounded-full animate-fade-in opacity-80"
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
-            animation: "fade-in 0.5s ease-out, float 2s ease-in-out",
+            animation: `fade-in 0.5s ease-out ${particle.delay}s, float 3s ease-in-out ${particle.delay}s`,
+            boxShadow: "0 0 10px hsl(var(--solar))",
           }}
         />
       ))}
@@ -272,19 +327,35 @@ const Story = () => {
           <Card className="bg-card/90 backdrop-blur-sm border-primary/20 shadow-glow animate-fade-in">
             <CardHeader className="text-center relative">
               <div className="flex justify-center mb-4 relative">
-                <img 
-                  src={scene.character} 
-                  alt={scene.title}
-                  className={`w-40 h-40 object-contain transition-all duration-500 ${
-                    sunMood === "sneeze" ? "animate-pulse-glow scale-110" : "animate-float"
-                  } ${sunMood === "silly" ? "animate-shimmer" : ""}`}
-                  style={{
-                    filter: sunMood === "proud" ? "drop-shadow(0 0 20px hsl(var(--aurora-green)))" : "none"
-                  }}
-                />
+                <div className="relative">
+                  <img 
+                    src={scene.character} 
+                    alt={scene.title}
+                    className={`w-40 h-40 object-contain transition-all duration-500 ${
+                      sunMood === "sneeze" ? "animate-pulse-glow scale-125 rotate-12" : 
+                      sunMood === "excited" ? "animate-float scale-110" :
+                      sunMood === "worried" ? "opacity-80 scale-95" :
+                      sunMood === "silly" ? "animate-shimmer" : "animate-float"
+                    }`}
+                    style={{
+                      filter: sunMood === "proud" ? "drop-shadow(0 0 30px hsl(var(--aurora-green)))" : 
+                              sunMood === "sneeze" ? "drop-shadow(0 0 40px hsl(var(--solar)))" :
+                              sunMood === "excited" ? "drop-shadow(0 0 20px hsl(var(--primary)))" :
+                              "drop-shadow(0 0 10px hsl(var(--primary) / 0.3))"
+                    }}
+                  />
+                  {sunMood === "sneeze" && (
+                    <div className="absolute inset-0 animate-ping opacity-20 bg-solar rounded-full" />
+                  )}
+                </div>
                 {scene.particles && (
                   <Badge className="absolute top-0 right-0 bg-solar text-foreground animate-pulse">
                     CME Active!
+                  </Badge>
+                )}
+                {isSimulating && (
+                  <Badge className="absolute bottom-0 left-0 bg-destructive text-destructive-foreground animate-pulse">
+                    Storm in Progress!
                   </Badge>
                 )}
               </div>
@@ -318,32 +389,288 @@ const Story = () => {
                     <label className="text-sm font-semibold text-foreground">
                       ⚡ Adjust CME Strength
                     </label>
-                    <Badge variant="secondary">{cmeStrength}%</Badge>
+                    <Badge variant="secondary" className="text-lg px-3">{cmeStrength}%</Badge>
                   </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="100"
-                    value={cmeStrength}
-                    onChange={(e) => setCmeStrength(Number(e.target.value))}
-                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                  <Slider
+                    value={[cmeStrength]}
+                    onValueChange={(value) => setCmeStrength(value[0])}
+                    min={10}
+                    max={100}
+                    step={1}
+                    className="w-full"
                   />
-                  <p className="text-sm text-muted-foreground">
-                    {cmeStrength < 30 && "🟢 Weak sneeze - Minor effects"}
-                    {cmeStrength >= 30 && cmeStrength < 70 && "🟡 Moderate sneeze - Noticeable impacts"}
-                    {cmeStrength >= 70 && "🔴 MEGA SNEEZE! - Major disruptions!"}
+                  <div className="grid grid-cols-3 gap-2 text-xs text-center">
+                    <div className={`p-2 rounded ${cmeStrength < 30 ? 'bg-green-500/20 border border-green-500' : 'bg-muted'}`}>
+                      🟢 Weak<br/>(10-29%)
+                    </div>
+                    <div className={`p-2 rounded ${cmeStrength >= 30 && cmeStrength < 70 ? 'bg-yellow-500/20 border border-yellow-500' : 'bg-muted'}`}>
+                      🟡 Moderate<br/>(30-69%)
+                    </div>
+                    <div className={`p-2 rounded ${cmeStrength >= 70 ? 'bg-red-500/20 border border-red-500' : 'bg-muted'}`}>
+                      🔴 Extreme<br/>(70-100%)
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground text-center font-semibold">
+                    {cmeStrength < 30 && "Minor satellite glitches, beautiful auroras"}
+                    {cmeStrength >= 30 && cmeStrength < 70 && "GPS errors, radio disruptions, power fluctuations"}
+                    {cmeStrength >= 70 && "MASSIVE BLACKOUTS! Satellite failures! Spectacular auroras!"}
                   </p>
                   <Button
                     onClick={() => {
-                      triggerParticles();
-                      setCurrentScene("sneeze");
+                      triggerParticles(50);
+                      setSunMood("sneeze");
+                      setTimeout(() => setCurrentScene("sneeze"), 500);
                     }}
-                    className="w-full"
+                    className="w-full group"
                     size="lg"
                   >
-                    <Zap className="mr-2 h-5 w-5" />
+                    <Zap className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                     TRIGGER THE SNEEZE!
                   </Button>
+                </div>
+              )}
+
+              {/* Interactive Simulators */}
+              {scene.simulator && (
+                <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg p-6 border-2 border-primary/30 space-y-4 animate-slide-up">
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl font-bold text-foreground mb-2">
+                      🎮 Interactive Simulator
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Adjust the solar storm intensity and watch the effects in real-time!
+                    </p>
+                  </div>
+
+                  {/* Satellite Simulator */}
+                  {scene.simulator === "satellites" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-4">
+                        {[1, 2, 3].map((sat) => (
+                          <div key={sat} className="text-center">
+                            <Satellite 
+                              className={`mx-auto h-12 w-12 transition-all duration-300 ${
+                                satelliteHealth > 66 ? "text-green-500" :
+                                satelliteHealth > 33 ? "text-yellow-500 animate-pulse" :
+                                "text-red-500 animate-bounce"
+                              }`}
+                              style={{
+                                transform: satelliteHealth < 50 ? `rotate(${Math.random() * 30 - 15}deg)` : "none"
+                              }}
+                            />
+                            <p className="text-xs mt-2 text-muted-foreground">Sat-{sat}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Satellite Health:</span>
+                          <Badge variant={satelliteHealth > 66 ? "default" : satelliteHealth > 33 ? "secondary" : "destructive"}>
+                            {Math.round(satelliteHealth)}%
+                          </Badge>
+                        </div>
+                        <Progress value={satelliteHealth} className="h-3" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Power Grid Simulator */}
+                  {scene.simulator === "power" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-4 gap-3">
+                        {[...Array(8)].map((_, i) => (
+                          <div key={i} className="text-center">
+                            <Power 
+                              className={`mx-auto h-10 w-10 transition-all duration-300 ${
+                                powerGridLoad < 70 ? "text-green-500" :
+                                powerGridLoad < 90 ? "text-yellow-500 animate-pulse" :
+                                i % 2 === 0 ? "text-red-500" : "text-muted animate-pulse"
+                              }`}
+                            />
+                            <Lightbulb 
+                              className={`mx-auto h-6 w-6 mt-1 transition-all ${
+                                (powerGridLoad > 90 && i % 2 === 0) ? "text-muted opacity-30" : "text-yellow-400"
+                              }`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Grid Load:</span>
+                          <Badge variant={powerGridLoad < 70 ? "default" : powerGridLoad < 90 ? "secondary" : "destructive"}>
+                            {Math.round(powerGridLoad)}%
+                          </Badge>
+                        </div>
+                        <Progress value={powerGridLoad} className="h-3" />
+                        {powerGridLoad > 90 && (
+                          <p className="text-xs text-destructive font-semibold text-center animate-pulse">
+                            ⚠️ BLACKOUT IN PROGRESS!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Radio Simulator */}
+                  {scene.simulator === "radio" && (
+                    <div className="space-y-4">
+                      <div className="flex justify-center items-center gap-8">
+                        <div className="text-center">
+                          <Radio className="mx-auto h-16 w-16 text-primary" />
+                          <p className="text-xs mt-2">Transmitter</p>
+                        </div>
+                        <div className="flex-1 relative h-16">
+                          {[...Array(5)].map((_, i) => (
+                            <div 
+                              key={i}
+                              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary rounded-full"
+                              style={{
+                                left: `${i * 20}%`,
+                                opacity: radioSignal > (i * 20) ? 0.8 - (i * 0.15) : 0.1,
+                                animation: radioSignal > 50 ? "pulse 1s ease-in-out infinite" : "none",
+                                animationDelay: `${i * 0.2}s`
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <div className="text-center">
+                          <Wifi className={`mx-auto h-16 w-16 ${radioSignal > 50 ? "text-green-500" : "text-red-500"}`} />
+                          <p className="text-xs mt-2">Receiver</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Signal Strength:</span>
+                          <Badge variant={radioSignal > 66 ? "default" : radioSignal > 33 ? "secondary" : "destructive"}>
+                            {Math.round(radioSignal)}%
+                          </Badge>
+                        </div>
+                        <Progress value={radioSignal} className="h-3" />
+                        {radioSignal < 30 && (
+                          <p className="text-xs text-destructive font-semibold text-center animate-pulse">
+                            📵 RADIO BLACKOUT!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Aurora Simulator */}
+                  {scene.simulator === "aurora" && (
+                    <div className="space-y-4">
+                      <div className="relative h-40 bg-gradient-to-b from-indigo-950 to-purple-950 rounded-lg overflow-hidden">
+                        <div className="absolute inset-0">
+                          <div 
+                            className="aurora-wave"
+                            style={{
+                              opacity: auroraIntensity / 100,
+                              height: `${auroraIntensity}%`,
+                              background: `linear-gradient(180deg, 
+                                hsl(var(--aurora-green)) 0%, 
+                                hsl(var(--aurora-blue)) 50%,
+                                hsl(var(--aurora-purple)) 100%)`,
+                              filter: "blur(20px)",
+                              animation: "float 3s ease-in-out infinite"
+                            }}
+                          />
+                        </div>
+                        <div className="absolute bottom-0 w-full h-8 bg-gradient-to-t from-black to-transparent" />
+                        <div className="absolute bottom-2 left-0 right-0 text-center">
+                          {auroraIntensity > 70 && (
+                            <span className="text-white text-xs animate-pulse">✨ Visible to the naked eye! ✨</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Aurora Intensity:</span>
+                          <Badge variant={auroraIntensity > 66 ? "default" : "secondary"}>
+                            {Math.round(auroraIntensity)}%
+                          </Badge>
+                        </div>
+                        <Progress value={auroraIntensity} className="h-3" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Magnetic Field Simulator */}
+                  {scene.simulator === "magnetic" && (
+                    <div className="space-y-4">
+                      <div className="relative h-40 bg-gradient-to-b from-blue-950 to-blue-900 rounded-lg overflow-hidden">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div 
+                            className="w-20 h-20 rounded-full bg-blue-500 relative"
+                            style={{
+                              boxShadow: `0 0 ${magneticFieldStrength / 2}px hsl(var(--primary))`
+                            }}
+                          >
+                            <div className="absolute inset-0 animate-ping rounded-full bg-blue-400 opacity-20" />
+                          </div>
+                          {[...Array(8)].map((_, i) => (
+                            <div 
+                              key={i}
+                              className="absolute w-2 h-2 bg-solar rounded-full"
+                              style={{
+                                top: `${50 + Math.sin(i * Math.PI / 4) * (50 - magneticFieldStrength / 3)}%`,
+                                left: `${50 + Math.cos(i * Math.PI / 4) * (50 - magneticFieldStrength / 3)}%`,
+                                opacity: 0.8,
+                                animation: `orbit ${3 + i * 0.5}s linear infinite`
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Magnetic Field Strength:</span>
+                          <Badge variant={magneticFieldStrength > 75 ? "default" : "secondary"}>
+                            {Math.round(magneticFieldStrength)}%
+                          </Badge>
+                        </div>
+                        <Progress value={magneticFieldStrength} className="h-3" />
+                        <p className="text-xs text-center text-muted-foreground">
+                          Particles are being deflected to the poles!
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Control buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={simulateSolarStorm}
+                      disabled={isSimulating}
+                      className="flex-1"
+                      size="lg"
+                      variant={isSimulating ? "secondary" : "default"}
+                    >
+                      {isSimulating ? (
+                        <>
+                          <Activity className="mr-2 h-5 w-5 animate-spin" />
+                          Storm Active...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-2 h-5 w-5" />
+                          Launch Solar Storm!
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={resetSimulation}
+                      variant="outline"
+                      size="lg"
+                    >
+                      Reset
+                    </Button>
+                  </div>
+
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">
+                      💡 The CME strength setting affects all simulations!
+                    </p>
+                  </div>
                 </div>
               )}
 
