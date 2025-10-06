@@ -19,7 +19,15 @@ const Feedback = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+    const formBody = new URLSearchParams(formData).toString();
+    fetch("https://formsubmit.co/amrloksha151@proton.me", {
+      method: "POST",
+      headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+      },
+      body: formBody,
+    });
     toast({
       title: "Thank you for your feedback!",
       description: "Your ideas help us improve space weather education for everyone.",
