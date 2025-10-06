@@ -11,13 +11,11 @@ const Gallery = () => {
       title: "Solar Flare and Earth",
       description: "depiction of the Sun magnetic fields is overlaid on an image of the Sun captured in extreme ultraviolet light by NASA Solar Dynamics Observatory on",
       credit: "NASA/SDO and the AIA, EVE, and HMI scilence teams",
-      url: "https://science.nasa.gov/sun/solar-storms-and-flares/",
     },
     {
       src: aurora,
       title: "Aurora Borealis",
       description: "The stunning result of charged particles interacting with Earth's atmosphere",
-      credit: "Generated educational visualization",
     },
   ];
 
